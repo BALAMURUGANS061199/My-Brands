@@ -53,10 +53,19 @@ const mongoose = require('mongoose');
 const { v4: uuidv4 } = require('uuid');
 
 const app = express();
-const upload = multer({ dest: '/var/task/uploads' }); // Set the destination directory for uploaded files
+// const upload = multer({ dest: '/var/task/uploads' }); // Set the destination directory for uploaded files
 
 
+const storage = multer.diskStorage({
+    destination: function (req, file, cb) {
+        cb(null, '/var/task/uploads'); // Specify the destination directory here
+    },
+    filename: function (req, file, cb) {
+        cb(null, uuidv4() + path.extname(file.originalname)); 
+    }
+});
 
+const upload = multer({ storage: storage });
 // Define Mongoose schema and model
 const BrandSchema = new mongoose.Schema({
     userId: { type: Number, default: 1001 },
