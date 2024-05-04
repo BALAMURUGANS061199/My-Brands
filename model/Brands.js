@@ -55,7 +55,7 @@ const { v4: uuidv4 } = require('uuid');
 const app = express();
 const upload = multer({ dest: '/var/task/uploads' }); // Set the destination directory for uploaded files
 
-// MongoDB Atlas connection setup
+
 
 // Define Mongoose schema and model
 const BrandSchema = new mongoose.Schema({
@@ -69,7 +69,7 @@ const BrandSchema = new mongoose.Schema({
 const BrandModel = mongoose.model('Brand', BrandSchema);
 
 // Handle file upload route
-app.post('/upload', upload.single('file'), async (req, res) => {
+app.post('/Upload', upload.single('file'), async (req, res) => {
     try {
         if (!req.file) {
             return res.status(400).json({ error: 'No file uploaded' });
@@ -98,10 +98,4 @@ app.post('/upload', upload.single('file'), async (req, res) => {
         console.error('Error uploading image and inserting URL:', error);
         res.status(500).json({ error: 'Internal Server Error' });
     }
-});
-
-// Start the server
-const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => {
-    console.log(`Server running on port ${PORT}`);
 });
