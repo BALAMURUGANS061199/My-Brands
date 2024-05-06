@@ -31,22 +31,25 @@ router.post('/Upload', async (req, res) => {
     const brandsData = req.body.brands; // Assuming the request body contains an array of brands
 
     try {
-        // Map over each brand in the request body
-        const results = await Promise.all(brandsData.map(async (brandData) => {
+        // Fetch the existing brand model if it exists
+        let existingBrand = await BrandModel.findOne();
+
+        if (!existingBrand) {
+            // If the brand doesn't exist, create a new brand object
+            existingBrand = new BrandModel({ result: [] });
+        }
+
+        // Map over each brand in the request body and insert into the result array
+        brandsData.forEach((brandData) => {
             const { name, imageUrl } = brandData;
-
-            // You can directly use the imageUrl received in the request body
-            const uploadedImageUrl = await uploadImageAndInsertURL(name, imageUrl);
-
-            return {
+            existingBrand.result.push({
                 name: name,
-                image: uploadedImageUrl
-            };
-        }));
+                image: imageUrl
+            });
+        });
 
-        const newBrand = new BrandModel({ result: results });
-
-        const savedBrand = await newBrand.save();
+        // Save/update the brand in the database
+        const savedBrand = await existingBrand.save();
         res.status(201).json(savedBrand);
     } catch (error) {
         console.error('Error uploading image and inserting URL:', error);
